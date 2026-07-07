@@ -5,15 +5,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>For You</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Privacy Lock Overlay Styles */
+        .lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .lock-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(251, 182, 182, 0.3);
+            text-align: center;
+            max-width: 350px;
+            width: 100%;
+        }
+        .lock-box h2 {
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        .lock-box input {
+            width: 80%;
+            padding: 12px;
+            border: 2px solid #ffe0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .lock-box input:focus {
+            border-color: #ff6b6b;
+        }
+        .lock-box button {
+            margin-top: 15px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .lock-box button:hover {
+            background: #ff4757;
+        }
+        .error-msg {
+            color: #ff4757;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: none;
+        }
+        /* Hide the main content initially */
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
+
+    <!-- Privacy Lock Screen -->
+    <div id="lockScreen" class="lock-screen">
+        <div class="lock-box">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>
+            <h2>Our Private Space</h2>
+            <input type="password" id="passwordInput" placeholder="Enter our password...">
+            <br>
+            <button onclick="checkPassword()">Unlock</button>
+            <p id="errorMsg" class="error-msg">Incorrect password. Try again! ❤️</p>
+        </div>
+    </div>
+
+    <!-- Main Content (Hidden until unlocked) -->
+    <div id="mainContent" class="container hidden">
         <div class="heart">❤️</div>
         <h1>Happy to Have You</h1>
         
         <div class="counter-box">
             <p>We have been together for:</p>
-            <!-- The number will dynamically calculate here -->
             <h2 id="days-count">Calculating...</h2>
             <p class="days-label">Days of laughing, loving, and growing.</p>
         </div>
@@ -26,19 +106,46 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        // PASSWORD CONFIGURATION
+        const correctPassword = "15092023"; 
+
+        function checkPassword() {
+            const userInput = document.getElementById("passwordInput").value;
+            const errorMsg = document.getElementById("errorMsg");
+            const lockScreen = document.getElementById("lockScreen");
+            const mainContent = document.getElementById("mainContent");
+
+            if (userInput === correctPassword) {
+                // Hide lock screen and reveal the letter
+                lockScreen.style.opacity = "0";
+                setTimeout(() => {
+                    lockScreen.classList.add("hidden");
+                    mainContent.classList.remove("hidden");
+                    updateCounter(); // Run the counter calculation
+                }, 500);
+            } else {
+                errorMsg.style.display = "block";
+                document.getElementById("passwordInput").value = "";
+            }
+        }
+
+        // Allow pressing "Enter" key to submit password
+        document.getElementById("passwordInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+        });
+
+        function updateCounter() {
             // Anniversary: October 15, 2023
-            // (Month 9 is October because JavaScript starts counting months from 0)
             const anniversary = new Date(2023, 9, 15); 
             const today = new Date();
             
-            // Calculate the exact difference in days
             const timeDiff = today.getTime() - anniversary.getTime();
             const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
             
-            // Inject the total days into the header
             document.getElementById('days-count').innerText = days + " Days";
-        });
+        }
     </script>
 </body>
 </html>
