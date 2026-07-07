@@ -13,34 +13,32 @@
         
         <div class="counter-box">
             <p>We have been together for:</p>
-            <h2 id="days-count">0</h2>
-            <p class="days-label">Days of laughing, loving, and 
-growing.</p>
+            <!-- The number will dynamically calculate here -->
+            <h2 id="days-count">Calculating...</h2>
+            <p class="days-label">Days of laughing, loving, and growing.</p>
         </div>
 
         <div class="letter">
             <p>Hey standard-bearer,</p>
-            <p>I wanted to build something unique just for you. Thank you 
-for being my favorite person, my safest space, and the best part of every 
-single day. Here's to many more days together.</p>
+            <p>I wanted to build something unique just for you. Thank you for being my favorite person, my safest space, and the best part of every single day. Here's to many more days together.</p>
             <p class="signature">With love, <br>Me</p>
         </div>
     </div>
 
     <script>
-        // SET YOUR ANNIVERSARY DATE HERE (2025, October - 1, Day)
-        // Note: Months are 0-indexed (0 = Jan, 1 = Feb, etc.)
-        // Example for October 14, 2024: new Date(2024, 9, 14)
-        const anniversary = new Date(2023, 9, 15); 
-        
-        function updateCounter() {
+        document.addEventListener("DOMContentLoaded", function() {
+            // Anniversary: October 15, 2023
+            // (Month 9 is October because JavaScript starts counting months from 0)
+            const anniversary = new Date(2023, 9, 15); 
             const today = new Date();
-            const timeDiff = today - anniversary;
+            
+            // Calculate the exact difference in days
+            const timeDiff = today.getTime() - anniversary.getTime();
             const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            document.getElementById('days-count').innerText = days + " 
-Days";
-        }
-        updateCounter();
+            
+            // Inject the total days into the header
+            document.getElementById('days-count').innerText = days + " Days";
+        });
     </script>
 </body>
 </html>
