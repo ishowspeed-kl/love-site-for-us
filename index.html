@@ -3,34 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Private Vault</title>
-    <link rel="stylesheet" href="style.css">
+    <title>For You</title>
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
-    <!-- Animated Floating Hearts Background Layer -->
-    <div class="hearts-bg" id="heartsBg"></div>
 
     <!-- Privacy Lock Screen -->
     <div id="lockScreen" class="lock-screen">
         <div class="lock-box">
-            <div class="lock-icon">🔒</div>
+            <div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>
             <h2>Our Private Space</h2>
             <input type="password" id="passwordInput" placeholder="Enter our password...">
             <br>
-            <button class="action-btn" onclick="checkPassword()">Unlock</button>
+            <button onclick="checkPassword()">Unlock</button>
             <p id="errorMsg" class="error-msg">Incorrect password. Try again! ❤️</p>
         </div>
     </div>
 
-    <!-- Main Content Container -->
+    <!-- Main Content -->
     <div id="mainContent" class="container hidden">
-        <div class="heart-hero">❤️</div>
-        <h1 class="gradient-text">Happy to Have You</h1>
+        <div class="heart">❤️</div>
+        <h1>Happy to Have You</h1>
         
         <div class="counter-box">
             <p>We have been together for:</p>
             <h2 id="days-count">Calculating...</h2>
-            <p class="days-label">Days of laughing, loving, and growing together.</p>
+            <p class="days-label">Days of laughing, loving, and growing.</p>
         </div>
 
         <div class="letter">
@@ -41,8 +39,8 @@
 
         <!-- Memory Vault Section -->
         <div class="memories-section">
-            <h3 class="gradient-text">✨ Our Memory Vault</h3>
-            <p style="font-size: 0.9rem; color: #888; margin-bottom: 20px;">Click the plus button to add a memory to our screen right now.</p>
+            <h3>✨ Our Memory Vault</h3>
+            <p style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Click the plus button to add a memory to our screen right now.</p>
             
             <div class="upload-btn-wrapper">
                 <button class="plus-btn"><span>＋</span> Add Photo</button>
@@ -56,22 +54,6 @@
     <script>
         const correctPassword = "15092023"; 
 
-        // Generate ambient floating background hearts dynamically
-        function createBackgroundHearts() {
-            const bg = document.getElementById('heartsBg');
-            for (let i = 0; i < 20; i++) {
-                const heart = document.createElement('div');
-                heart.className = 'floating-heart';
-                heart.innerText = '❤️';
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.animationDelay = Math.random() * 8 + 's';
-                heart.style.fontSize = (Math.random() * 1.5 + 0.5) + 'rem';
-                heart.style.animationDuration = (Math.random() * 6 + 6) + 's';
-                bg.appendChild(heart);
-            }
-        }
-        createBackgroundHearts();
-
         function checkPassword() {
             const userInput = document.getElementById("passwordInput").value;
             const errorMsg = document.getElementById("errorMsg");
@@ -83,10 +65,8 @@
                 setTimeout(() => {
                     lockScreen.classList.add("hidden");
                     mainContent.classList.remove("hidden");
-                    // Trigger dynamic entry animations
-                    mainContent.classList.add("fade-up-active");
                     updateCounter();
-                    loadSavedMemories();
+                    loadSavedMemories(); 
                 }, 500);
             } else {
                 errorMsg.style.display = "block";
@@ -106,6 +86,7 @@
             document.getElementById('days-count').innerText = days + " Days";
         }
 
+        // AUTO-SAVE SYSTEM FOR THE PLUS ICON
         function loadSavedMemories() {
             const saved = localStorage.getItem('our_memories');
             if (saved) {
@@ -117,14 +98,14 @@
         function handleImage(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                createPolaroid(event.target.result, "", true);
+                createPolaroid(event.target.result, "", true); 
             };
             reader.readAsDataURL(e.target.files[0]);
         }
 
         function createPolaroid(srcCode, captionText, shouldSave) {
             const polaroidDiv = document.createElement('div');
-            polaroidDiv.className = 'polaroid pop-in';
+            polaroidDiv.className = 'polaroid';
 
             const img = document.createElement('img');
             img.src = srcCode;
@@ -147,11 +128,13 @@
         function saveAllToMemory() {
             const galleryItems = document.querySelectorAll('.polaroid');
             const dataToSave = [];
+            
             galleryItems.forEach(item => {
                 const src = item.querySelector('img').src;
                 const caption = item.querySelector('.caption-input').value;
                 dataToSave.push({ src, caption });
             });
+            
             localStorage.setItem('our_memories', JSON.stringify(dataToSave));
         }
     </script>
