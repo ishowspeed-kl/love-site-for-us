@@ -47,7 +47,7 @@
             margin-bottom: 15px;
         }
         
-        /* The Gemini-style Plus (+) Upload Button */
+        /* Gemini-style Plus (+) Upload Button */
         .upload-btn-wrapper {
             position: relative;
             display: inline-block;
@@ -151,7 +151,7 @@
             <p class="signature">With love, <br>Me</p>
         </div>
 
-        <!-- NEW: Share Memories Feature -->
+        <!-- Memory Vault Section -->
         <div class="memories-section">
             <h3>✨ Our Memory Vault</h3>
             <p style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Click the plus button to add a memory to our screen right now.</p>
@@ -161,13 +161,11 @@
                 <input type="file" id="imageLoader" accept="image/*" onchange="handleImage(event)">
             </div>
 
-            <!-- This is where photos will pop into view -->
             <div class="gallery" id="memoryGallery"></div>
         </div>
     </div>
 
     <script>
-        // PASSWORD CONFIGURATION
         const correctPassword = "15092023"; 
 
         function checkPassword() {
@@ -182,6 +180,7 @@
                     lockScreen.classList.add("hidden");
                     mainContent.classList.remove("hidden");
                     updateCounter();
+                    loadSavedMemories(); // Loads the images automatically when she unlocks it
                 }, 500);
             } else {
                 errorMsg.style.display = "block";
@@ -201,32 +200,57 @@
             document.getElementById('days-count').innerText = days + " Days";
         }
 
-        // Handle Image Upload and render a local Polaroid frame
+        // AUTO-SAVE SYSTEM FOR THE PLUS ICON
+        function loadSavedMemories() {
+            const saved = localStorage.getItem('our_memories');
+            if (saved) {
+                const memories = JSON.parse(saved);
+                memories.forEach(mem => createPolaroid(mem.src, mem.caption, false));
+            }
+        }
+
         function handleImage(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                // Create Polaroid Wrapper
-                const polaroidDiv = document.createElement('div');
-                polaroidDiv.className = 'polaroid';
-
-                // Create Image Item
-                const img = document.createElement('img');
-                img.src = event.target.result;
-
-                // Create Caption Input for writing memories
-                const caption = document.createElement('input');
-                caption.type = 'text';
-                caption.className = 'caption-input';
-                caption.placeholder = 'Write a caption...✍️';
-
-                // Put it all together
-                polaroidDiv.appendChild(img);
-                polaroidDiv.appendChild(caption);
-                
-                // Add to gallery display
-                document.getElementById('memoryGallery').appendChild(polaroidDiv);
-            }
+                createPolaroid(event.target.result, "", true); // Triggers instant save
+            };
             reader.readAsDataURL(e.target.files[0]);
+        }
+
+        function createPolaroid(srcCode, captionText, shouldSave) {
+            const polaroidDiv = document.createElement('div');
+            polaroidDiv.className = 'polaroid';
+
+            const img = document.createElement('img');
+            img.src = srcCode;
+
+            const caption = document.createElement('input');
+            caption.type = 'text';
+            caption.className = 'caption-input';
+            caption.placeholder = 'Write a caption...✍️';
+            caption.value = captionText;
+
+            // Auto-save changes as she types out the caption
+            caption.addEventListener('input', saveAllToMemory);
+
+            polaroidDiv.appendChild(img);
+            polaroidDiv.appendChild(caption);
+            document.getElementById('memoryGallery').appendChild(polaroidDiv);
+
+            if (shouldSave) saveAllToMemory();
+        }
+
+        function saveAllToMemory() {
+            const galleryItems = document.querySelectorAll('.polaroid');
+            const dataToSave = [];
+            
+            galleryItems.forEach(item => {
+                const src = item.querySelector('img').src;
+                const caption = item.querySelector('.caption-input').value;
+                dataToSave.push({ src, caption });
+            });
+            
+            localStorage.setItem('our_memories', JSON.stringify(dataToSave));
         }
     </script>
 </body>
