@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>For You</title>
-    <link rel="stylesheet" href="style.css?v=3">
+    <title>Our Private Space</title>
+    <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
@@ -37,10 +37,10 @@
             <p class="signature">With love, <br>Me</p>
         </div>
 
-        <!-- Memory Vault Section -->
+        <!-- Shared Memory Vault Section -->
         <div class="memories-section">
-            <h3>✨ Our Memory Vault</h3>
-            <p style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Click the plus button to add a memory to our screen right now.</p>
+            <h3>✨ Our Live Memory Vault</h3>
+            <p style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Connected Cloud Vault: Anything you upload here can be seen by both of you instantly!</p>
             
             <div class="upload-btn-wrapper">
                 <button class="plus-btn"><span>＋</span> Add Photo</button>
@@ -53,6 +53,8 @@
 
     <script>
         const correctPassword = "15092023"; 
+        // Unique cloud bucket key based on your special anniversary date
+        const cloudStorageUrl = "https://kv.val.run/love_site_vault_15092023";
 
         function checkPassword() {
             const userInput = document.getElementById("passwordInput").value;
@@ -66,7 +68,7 @@
                     lockScreen.classList.add("hidden");
                     mainContent.classList.remove("hidden");
                     updateCounter();
-                    loadSavedMemories(); 
+                    syncCloudMemories(); // Load mutual images from cloud database
                 }, 500);
             } else {
                 errorMsg.style.display = "block";
@@ -86,21 +88,46 @@
             document.getElementById('days-count').innerText = days + " Days";
         }
 
-        // AUTO-SAVE SYSTEM FOR THE PLUS ICON
-        function loadSavedMemories() {
-            const saved = localStorage.getItem('our_memories');
-            if (saved) {
-                const memories = JSON.parse(saved);
-                memories.forEach(mem => createPolaroid(mem.src, mem.caption, false));
+        // REAL-TIME CLOUD SYNC SYSTEM
+        async function syncCloudMemories() {
+            try {
+                const response = await fetch(cloudStorageUrl);
+                if (response.ok) {
+                    const memories = await response.json();
+                    document.getElementById('memoryGallery').innerHTML = ""; // clear old
+                    if (Array.isArray(memories)) {
+                        memories.forEach(mem => createPolaroid(mem.src, mem.caption, false));
+                    }
+                }
+            } catch (err) {
+                console.log("No cloud data initialized yet. Creating first entry.");
             }
         }
 
         function handleImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Compress slightly to send easily through cloud
             const reader = new FileReader();
             reader.onload = function(event) {
-                createPolaroid(event.target.result, "", true); 
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 500; // Optimal phone layout size
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    createPolaroid(compressedBase64, "", true);
+                };
+                img.src = event.target.result;
             };
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
         }
 
         function createPolaroid(srcCode, captionText, shouldSave) {
@@ -113,19 +140,20 @@
             const caption = document.createElement('input');
             caption.type = 'text';
             caption.className = 'caption-input';
-            caption.placeholder = 'Write a caption...✍️';
+            caption.placeholder = 'Write a caption together...✍️';
             caption.value = captionText;
 
-            caption.addEventListener('input', saveAllToMemory);
+            // Auto-sync captions when either user leaves the input field
+            caption.addEventListener('change', saveAllToCloud);
 
             polaroidDiv.appendChild(img);
             polaroidDiv.appendChild(caption);
             document.getElementById('memoryGallery').appendChild(polaroidDiv);
 
-            if (shouldSave) saveAllToMemory();
+            if (shouldSave) saveAllToCloud();
         }
 
-        function saveAllToMemory() {
+        async function saveAllToCloud() {
             const galleryItems = document.querySelectorAll('.polaroid');
             const dataToSave = [];
             
@@ -134,8 +162,17 @@
                 const caption = item.querySelector('.caption-input').value;
                 dataToSave.push({ src, caption });
             });
-            
-            localStorage.setItem('our_memories', JSON.stringify(dataToSave));
+
+            // Send to live cloud sync endpoint
+            try {
+                await fetch(cloudStorageUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSave)
+                });
+            } catch (err) {
+                console.error("Cloud syncing error: ", err);
+            }
         }
     </script>
 </body>
