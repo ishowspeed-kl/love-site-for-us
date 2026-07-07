@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="heart">❤️</div>
+        <h1>Happy to Have You</h1>
+        
+        <div class="counter-box">
+            <p>We have been together for:</p>
+            <h2 id="days-count">0</h2>
+            <p class="days-label">Days of laughing, loving, and 
+growing.</p>
+        </div>
+
+        <div class="letter">
+            <p>Hey standard-bearer,</p>
+            <p>I wanted to build something unique just for you. Thank you 
+for being my favorite person, my safest space, and the best part of every 
+single day. Here's to many more days together.</p>
+            <p class="signature">With love, <br>Me</p>
+        </div>
+    </div>
+
+    <script>
+        // SET YOUR ANNIVERSARY DATE HERE (2025, October - 1, Day)
+        // Note: Months are 0-indexed (0 = Jan, 1 = Feb, etc.)
+        // Example for October 14, 2024: new Date(2024, 9, 14)
+        const anniversary = new Date(2023, 9, 15); 
+        
+        function updateCounter() {
+            const today = new Date();
+            const timeDiff = today - anniversary;
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            document.getElementById('days-count').innerText = days + " 
+Days";
+        }
+        updateCounter();
+    </script>
+</body>
+</html>
