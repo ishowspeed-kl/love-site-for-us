@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Private Space</title>
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 
@@ -39,11 +39,11 @@
 
         <!-- Shared Memory Vault Section -->
         <div class="memories-section">
-            <h3>✨ Our Live Memory Vault</h3>
-            <p style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Connected Cloud Vault: Anything you upload here can be seen by both of you instantly!</p>
+            <h3>✨ Our Shared Cloud Vault</h3>
+            <p id="syncStatus" style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Connected to our mutual cloud gallery.</p>
             
             <div class="upload-btn-wrapper">
-                <button class="plus-btn"><span>＋</span> Add Photo</button>
+                <button class="plus-btn" id="uploadBtn"><span>＋</span> Add Photo</button>
                 <input type="file" id="imageLoader" accept="image/*" onchange="handleImage(event)">
             </div>
 
@@ -53,8 +53,12 @@
 
     <script>
         const correctPassword = "15092023"; 
-        // Unique cloud bucket key based on your special anniversary date
-        const cloudStorageUrl = "https://kv.val.run/love_site_vault_15092023";
+        
+        // Your dynamic Imgbb key successfully configured
+        const IMGBB_API_KEY = "17d052189730742c9add3641a5971b11";
+        
+        // Shared database location for your mutual image sync
+        const syncDbUrl = "https://kv.val.run/love_vault_links_15092023";
 
         function checkPassword() {
             const userInput = document.getElementById("passwordInput").value;
@@ -68,7 +72,7 @@
                     lockScreen.classList.add("hidden");
                     mainContent.classList.remove("hidden");
                     updateCounter();
-                    syncCloudMemories(); // Load mutual images from cloud database
+                    loadSharedGallery(); 
                 }, 500);
             } else {
                 errorMsg.style.display = "block";
@@ -88,54 +92,65 @@
             document.getElementById('days-count').innerText = days + " Days";
         }
 
-        // REAL-TIME CLOUD SYNC SYSTEM
-        async function syncCloudMemories() {
+        // Fetch shared gallery list from cloud configuration
+        async function loadSharedGallery() {
             try {
-                const response = await fetch(cloudStorageUrl);
+                const response = await fetch(syncDbUrl);
                 if (response.ok) {
                     const memories = await response.json();
-                    document.getElementById('memoryGallery').innerHTML = ""; // clear old
+                    document.getElementById('memoryGallery').innerHTML = ""; 
                     if (Array.isArray(memories)) {
                         memories.forEach(mem => createPolaroid(mem.src, mem.caption, false));
                     }
                 }
             } catch (err) {
-                console.log("No cloud data initialized yet. Creating first entry.");
+                console.log("Gallery empty or starting fresh.");
             }
         }
 
-        function handleImage(e) {
+        // Handle image selection, instantly host it to Imgbb
+        async function handleImage(e) {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Compress slightly to send easily through cloud
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 500; // Optimal phone layout size
-                    const scaleSize = MAX_WIDTH / img.width;
-                    canvas.width = MAX_WIDTH;
-                    canvas.height = img.height * scaleSize;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                    createPolaroid(compressedBase64, "", true);
-                };
-                img.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+            const statusText = document.getElementById('syncStatus');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            statusText.innerText = "⏳ Uploading photo to our shared vault...";
+            uploadBtn.style.opacity = "0.5";
+
+            // Prepare image payload for Imgbb
+            const formData = new FormData();
+            formData.append("image", file);
+
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const resData = await res.json();
+
+                if (resData.success) {
+                    const hostedImageUrl = resData.data.url;
+                    // Render the polaroid layout and push to shared database
+                    createPolaroid(hostedImageUrl, "", true);
+                    statusText.innerText = "✅ Saved successfully to both devices!";
+                } else {
+                    statusText.innerText = "❌ Upload failed. Checking server links.";
+                }
+            } catch (err) {
+                statusText.innerText = "❌ Connection error while saving.";
+                console.error(err);
+            }
+            uploadBtn.style.opacity = "1";
         }
 
-        function createPolaroid(srcCode, captionText, shouldSave) {
+        function createPolaroid(srcUrl, captionText, shouldSave) {
             const polaroidDiv = document.createElement('div');
             polaroidDiv.className = 'polaroid';
 
             const img = document.createElement('img');
-            img.src = srcCode;
+            img.src = srcUrl;
 
             const caption = document.createElement('input');
             caption.type = 'text';
@@ -143,17 +158,17 @@
             caption.placeholder = 'Write a caption together...✍️';
             caption.value = captionText;
 
-            // Auto-sync captions when either user leaves the input field
-            caption.addEventListener('change', saveAllToCloud);
+            // Update text across both phones when done typing
+            caption.addEventListener('change', saveGalleryLayoutToCloud);
 
             polaroidDiv.appendChild(img);
             polaroidDiv.appendChild(caption);
             document.getElementById('memoryGallery').appendChild(polaroidDiv);
 
-            if (shouldSave) saveAllToCloud();
+            if (shouldSave) saveGalleryLayoutToCloud();
         }
 
-        async function saveAllToCloud() {
+        async function saveGalleryLayoutToCloud() {
             const galleryItems = document.querySelectorAll('.polaroid');
             const dataToSave = [];
             
@@ -163,15 +178,14 @@
                 dataToSave.push({ src, caption });
             });
 
-            // Send to live cloud sync endpoint
             try {
-                await fetch(cloudStorageUrl, {
+                await fetch(syncDbUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dataToSave)
                 });
             } catch (err) {
-                console.error("Cloud syncing error: ", err);
+                console.error("Layout sync error: ", err);
             }
         }
     </script>
