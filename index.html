@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Private Space</title>
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Content Container -->
     <div id="mainContent" class="container hidden">
         <div class="heart">❤️</div>
         <h1>Happy to Have You</h1>
@@ -37,10 +37,10 @@
             <p class="signature">With love, <br>Me</p>
         </div>
 
-        <!-- Shared Memory Vault Section -->
+        <!-- Shared Memory Vault Layout -->
         <div class="memories-section">
             <h3>✨ Our Shared Cloud Vault</h3>
-            <p id="syncStatus" style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Connected to our mutual cloud gallery.</p>
+            <p id="syncStatus" style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Setting up secure connection...</p>
             
             <div class="upload-btn-wrapper">
                 <button class="plus-btn" id="uploadBtn"><span>＋</span> Add Photo</button>
@@ -54,11 +54,9 @@
     <script>
         const correctPassword = "15092023"; 
         
-        // Your dynamic Imgbb key successfully configured
+        // Final secure credential architecture
         const IMGBB_API_KEY = "17d052189730742c9add3641a5971b11";
-        
-        // Shared database location for your mutual image sync
-        const syncDbUrl = "https://kv.val.run/love_vault_links_15092023";
+        const JSONBIN_KEY = "$2a$10$jqL2PEarUUpAC.Ll6VHUfuVuc44meEDE7g9IZKrLotAg6PNRGeF3K";
 
         function checkPassword() {
             const userInput = document.getElementById("passwordInput").value;
@@ -92,23 +90,37 @@
             document.getElementById('days-count').innerText = days + " Days";
         }
 
-        // Fetch shared gallery list from cloud configuration
+        // Auto-loads gallery state mapping directly from browser sync metadata
         async function loadSharedGallery() {
+            const statusText = document.getElementById('syncStatus');
+            const targetBinId = localStorage.getItem('mutual_bin_reference_id');
+            
+            if (!targetBinId) {
+                statusText.innerText = "✅ Live sync ready! Add your very first photo.";
+                return;
+            }
+
             try {
-                const response = await fetch(syncDbUrl);
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${targetBinId}/latest`, {
+                    headers: { "X-Master-Key": JSONBIN_KEY }
+                });
                 if (response.ok) {
-                    const memories = await response.json();
+                    const resData = await response.json();
+                    const memories = resData.record;
                     document.getElementById('memoryGallery').innerHTML = ""; 
                     if (Array.isArray(memories)) {
                         memories.forEach(mem => createPolaroid(mem.src, mem.caption, false));
                     }
+                    statusText.innerText = "✅ Cloud gallery synchronized up-to-date!";
+                } else {
+                    statusText.innerText = "✨ Starting a fresh cloud template.";
                 }
             } catch (err) {
-                console.log("Gallery empty or starting fresh.");
+                statusText.innerText = "⚠️ Connected, waiting for initial photo layout.";
             }
         }
 
-        // Handle image selection, instantly host it to Imgbb
+        // Primary Image Interceptor -> uploads raw image binary to ImgBB cloud network
         async function handleImage(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -116,10 +128,9 @@
             const statusText = document.getElementById('syncStatus');
             const uploadBtn = document.getElementById('uploadBtn');
             
-            statusText.innerText = "⏳ Uploading photo to our shared vault...";
+            statusText.innerText = "⏳ Processing and uploading picture to cloud server...";
             uploadBtn.style.opacity = "0.5";
 
-            // Prepare image payload for Imgbb
             const formData = new FormData();
             formData.append("image", file);
 
@@ -132,15 +143,12 @@
 
                 if (resData.success) {
                     const hostedImageUrl = resData.data.url;
-                    // Render the polaroid layout and push to shared database
                     createPolaroid(hostedImageUrl, "", true);
-                    statusText.innerText = "✅ Saved successfully to both devices!";
                 } else {
-                    statusText.innerText = "❌ Upload failed. Checking server links.";
+                    statusText.innerText = "❌ Upload failed. Please check image constraints.";
                 }
             } catch (err) {
-                statusText.innerText = "❌ Connection error while saving.";
-                console.error(err);
+                statusText.innerText = "❌ Network connection error during upload.";
             }
             uploadBtn.style.opacity = "1";
         }
@@ -158,7 +166,6 @@
             caption.placeholder = 'Write a caption together...✍️';
             caption.value = captionText;
 
-            // Update text across both phones when done typing
             caption.addEventListener('change', saveGalleryLayoutToCloud);
 
             polaroidDiv.appendChild(img);
@@ -168,7 +175,9 @@
             if (shouldSave) saveGalleryLayoutToCloud();
         }
 
+        // Orchestrates core sync engine payload distribution
         async function saveGalleryLayoutToCloud() {
+            const statusText = document.getElementById('syncStatus');
             const galleryItems = document.querySelectorAll('.polaroid');
             const dataToSave = [];
             
@@ -178,14 +187,42 @@
                 dataToSave.push({ src, caption });
             });
 
+            const targetBinId = localStorage.getItem('mutual_bin_reference_id');
+
             try {
-                await fetch(syncDbUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSave)
-                });
+                if (targetBinId) {
+                    // Update existing image database state
+                    await fetch(`https://api.jsonbin.io/v3/b/${targetBinId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': JSONBIN_KEY
+                        },
+                        body: JSON.stringify(dataToSave)
+                    });
+                    statusText.innerText = "✅ Saved and synced perfectly!";
+                } else {
+                    // Initialize a brand new data bucket on JSONbin cluster
+                    statusText.innerText = "⏳ Provisioning remote storage bucket...";
+                    const response = await fetch(`https://api.jsonbin.io/v3/b`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Master-Key': JSONBIN_KEY,
+                            'X-Bin-Private': 'false'
+                        },
+                        body: JSON.stringify(dataToSave)
+                    });
+                    const resultData = await response.json();
+                    if (resultData.metadata && resultData.metadata.id) {
+                        const newBinId = resultData.metadata.id;
+                        localStorage.setItem('mutual_bin_reference_id', newBinId);
+                        statusText.innerText = "✅ Connected & saved successfully!";
+                    }
+                }
             } catch (err) {
-                console.error("Layout sync error: ", err);
+                statusText.innerText = "❌ Failed to save sync modifications remote backend.";
+                console.error(err);
             }
         }
     </script>
