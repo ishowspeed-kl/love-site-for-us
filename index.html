@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Private Space</title>
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12">
     <!-- Image Cropping Utility Module -->
     <script src="https://cdn.jsdelivr.net/gh/billythekid/croppr.js@2.3.0/dist/croppr.min.js"></script>
 </head>
 <body>
 
-    <!-- Unified Interactive Lock Screen Context Wrapper -->
+    <!-- Unified Interactive Lock Screen -->
     <div id="lockScreen" class="interactive-lock-overlay">
         <div class="scene-container">
             
@@ -23,7 +23,7 @@
                 <div class="light-beam" id="beam"></div>
             </div>
 
-            <!-- GLASS LOOK PASSPORT VALIDATION CARD -->
+            <!-- LOGIN PASSPORT CARD -->
             <div class="glass-lock-box" id="loginBox">
                 <h2>Welcome</h2>
                 <p class="subtitle">Our Private Space</p>
@@ -62,13 +62,13 @@
             <p class="days-label">Days of laughing, loving, and growing.</p>
         </div>
 
-        <!-- IDEA 2: SOUNDTRACK PLAYBOX EMBED WITH CUSTOM PLAYLIST -->
+        <!-- SOUNDTRACK PLAYBOX WITH YOUR EMBEDDED PLAYLIST -->
         <div class="jukebox-box">
             <h3>🎵 Our Soundtrack</h3>
             <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5m98GCoOjOKYO1aoBtJmuR?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         </div>
 
-        <!-- IDEA 1: DIGITAL LOVE LETTER TIME CAPSULE -->
+        <!-- DIGITAL LOVE LETTER TIME CAPSULE -->
         <div class="capsule-box">
             <h3>💌 Shared Time Capsule</h3>
             <div id="capsuleDisplayZone">
@@ -110,6 +110,31 @@
         let capsuleTimerInterval = null;
         let activeCapsuleData = null;
 
+        // Background Floating Hearts Generator Engine
+        function startMarginHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'bg-heart';
+                heart.innerHTML = '❤️';
+                
+                const randomSize = Math.floor(Math.random() * 22) + 12; // 12px to 34px
+                const randomLeft = Math.random() * 100;
+                
+                // Restrict generation logic out of center box area on wide screens
+                if (randomLeft > 32 && randomLeft < 68) {
+                    heart.style.left = (Math.random() > 0.5 ? Math.random() * 22 : 78 + Math.random() * 22) + 'vw';
+                } else {
+                    heart.style.left = randomLeft + 'vw';
+                }
+                
+                heart.style.fontSize = randomSize + 'px';
+                heart.style.animationDuration = (Math.random() * 4 + 6) + 's'; // 6s to 10s flow
+                
+                document.body.appendChild(heart);
+                setTimeout(() => { heart.remove(); }, 10000);
+            }, 450);
+        }
+
         function toggleLight() {
             const lockScreen = document.getElementById("lockScreen");
             const chain = document.getElementById("pullChain");
@@ -137,6 +162,7 @@
                     updateCounter();
                     loadSharedGallery(); 
                     loadTimeCapsule();
+                    startMarginHearts(); // Triggers the romantic side animations
                 }, 500);
             } else {
                 errorMsg.style.display = "block";
@@ -156,7 +182,7 @@
             document.getElementById('days-count').innerText = days + " Days";
         }
 
-        // TIME CAPSULE CORE CONTROLLERS
+        // TIME CAPSULE CONTROLLERS
         async function loadTimeCapsule() {
             try {
                 const response = await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}/latest`, {
@@ -202,10 +228,6 @@
                 }
                 
                 const payload = { gallery: currentRecord, metaCapsule: newCapsule };
-                if(Array.isArray(currentRecord)) {
-                    payload.gallery = currentRecord;
-                }
-
                 await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
@@ -354,11 +376,9 @@
                     createPolaroid(resData.secure_url, "", resourceType, true);
                     statusText.innerText = "✅ Upload complete!";
                 } else {
-                    statusText.innerText = "❌ Upload failed. Check configuration.";
+                    statusText.innerText = "❌ Upload failed.";
                 }
-            } catch (err) {
-                statusText.innerText = "❌ Connection error.";
-            }
+            } catch (err) { statusText.innerText = "❌ Connection error."; }
             uploadBtn.style.opacity = "1";
             document.getElementById('imageLoader').value = "";
         }
@@ -371,7 +391,7 @@
             deleteBtn.className = 'delete-btn';
             deleteBtn.innerHTML = '×';
             deleteBtn.onclick = function() {
-                if (confirm("Are you sure you want to delete this memory? 🥺")) {
+                if (confirm("Delete this memory? 🥺")) {
                     polaroidDiv.remove();
                     saveGalleryLayoutToCloud();
                 }
@@ -380,12 +400,8 @@
             
             if (mediaType === 'video') {
                 const video = document.createElement('video');
-                video.src = srcUrl;
-                video.controls = true;
-                video.style.width = "250px";
-                video.style.height = "190px";
-                video.style.objectFit = "cover";
-                video.style.borderRadius = "2px";
+                video.src = srcUrl; video.controls = true;
+                video.style.width = "250px"; video.style.height = "190px"; video.style.objectFit = "cover";
                 polaroidDiv.appendChild(video);
             } else {
                 const img = document.createElement('img');
@@ -394,10 +410,8 @@
             }
 
             const caption = document.createElement('input');
-            caption.type = 'text';
-            caption.className = 'caption-input';
-            caption.placeholder = 'Write a caption together...✍️';
-            caption.value = captionText;
+            caption.type = 'text'; caption.className = 'caption-input';
+            caption.placeholder = 'Write a caption together...✍️'; caption.value = captionText;
             caption.addEventListener('change', saveGalleryLayoutToCloud);
             
             polaroidDiv.setAttribute('data-type', mediaType);
@@ -413,10 +427,11 @@
             galleryItems.forEach(item => {
                 const imgOrVideo = item.querySelector('img, video');
                 if (imgOrVideo) {
-                    const src = imgOrVideo.src;
-                    const caption = item.querySelector('.caption-input').value;
-                    const type = item.getAttribute('data-type') || 'image';
-                    dataToSave.push({ src, caption, type });
+                    dataToSave.push({
+                        src: imgOrVideo.src,
+                        caption: item.querySelector('.caption-input').value,
+                        type: item.getAttribute('data-type') || 'image'
+                    });
                 }
             });
             try {
