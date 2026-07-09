@@ -27,12 +27,12 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
 .days-label { font-size: 0.9rem; color: #7f8c8d; }
 
 /* ==========================================================================
-   UPDATED: VINTAGE LAMP SIDE-BY-SIDE INTERACTIVE LOGIN OVERLAY
+   VINTAGE LAMP SIDE-BY-SIDE INTERACTIVE LOGIN OVERLAY
    ========================================================================== */
 .interactive-lock-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: #181920; /* Dark when loaded */
+    background: #181920;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -51,7 +51,6 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
     padding: 20px;
 }
 
-/* RESPONSIVE LAYOUT FOR MOBILE SCREENS */
 @media (max-width: 650px) {
     .scene-container {
         flex-direction: column;
@@ -59,7 +58,7 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
     }
 }
 
-/* LAMP ARCHITECTURE CONSTRUCTION */
+/* LAMP ARCHITECTURE */
 .lamp-unit {
     position: relative;
     width: 180px;
@@ -95,7 +94,6 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
     z-index: 4;
 }
 
-/* Pull Wire String with pull handle ball */
 .lamp-chain {
     position: absolute;
     top: 70px;
@@ -115,12 +113,10 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
     border-radius: 50%;
 }
 
-/* Pull interaction kinetic compression script framework */
 .lamp-chain.pulling {
     transform: translateY(12px);
 }
 
-/* Ambient Radial Beam Flow Overlay Mask */
 .light-beam {
     position: absolute;
     top: 45px;
@@ -135,7 +131,7 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
     transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
-/* MODERN FROSTED GLASS PASSWORD DISPLAY CONTAINER */
+/* FROSTED GLASS PASSWORD CONTAINER */
 .glass-lock-box {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -173,7 +169,7 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
     text-align: center;
     font-size: 1rem;
     outline: none;
-    pointer-events: none; /* Block editing while turned off */
+    pointer-events: none;
 }
 
 .gold-btn {
@@ -190,24 +186,13 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
     pointer-events: none;
 }
 
-/* ==========================================================================
-   LIGHT ON CONDITIONAL SHIFT STATE PROPERTIES
-   ========================================================================== */
-.light-on {
-    background: #14151b; /* Ambient room depth context layer background */
-}
-
+/* LIGHT ON STATE */
+.light-on { background: #14151b; }
 .light-on .lamp-shade {
     background: #fffbe6;
     box-shadow: 0 -20px 40px rgba(255, 251, 230, 0.2), 0 10px 40px rgba(255, 251, 230, 0.6);
 }
-
-.light-on .light-beam {
-    opacity: 1;
-    transform: scale(1);
-}
-
-/* Glass Box activates beautifully into visual space */
+.light-on .light-beam { opacity: 1; transform: scale(1); }
 .light-on .glass-lock-box {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -217,27 +202,57 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
     opacity: 1;
     transform: translateY(0);
 }
-
 .light-on .glass-lock-box h2 { color: #ffffff; }
 .light-on .glass-lock-box .subtitle { color: rgba(255,255,255,0.6); }
-.light-on .glass-lock-box input {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.2);
-    pointer-events: auto;
-}
-.light-on .gold-btn {
-    background: linear-gradient(135deg, #ffe082 0%, #ffca28 100%);
-    color: #3e2723;
-    box-shadow: 0 4px 15px rgba(255, 202, 40, 0.3);
-    pointer-events: auto;
-}
-.light-on .gold-btn:hover {
-    background: linear-gradient(135deg, #fff1c1 0%, #ffd54f 100%);
-}
+.light-on .glass-lock-box input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); pointer-events: auto; }
+.light-on .gold-btn { background: linear-gradient(135deg, #ffe082 0%, #ffca28 100%); color: #3e2723; box-shadow: 0 4px 15px rgba(255, 202, 40, 0.3); pointer-events: auto; }
+.light-on .gold-btn:hover { background: linear-gradient(135deg, #fff1c1 0%, #ffd54f 100%); }
 
 .error-msg { color: #ff4757; font-size: 0.9rem; margin-top: 12px; display: none; }
 
-/* Rest of Vault Styling elements */
+/* ==========================================================================
+   IMAGE CROPPER MODAL DIALOG
+   ========================================================================== */
+.crop-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20000;
+}
+.crop-box {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    max-width: 90%;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.crop-box h4 { margin: 0 0 15px 0; color: #ff6b6b; font-size: 1.2rem; }
+.crop-container { max-height: 300px; margin-bottom: 20px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+.crop-container img { max-width: 100%; max-height: 300px; }
+.crop-actions { display: flex; gap: 15px; justify-content: center; }
+.crop-btn { padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; }
+.crop-btn.cancel { background: #f1f2f6; color: #57606f; }
+.crop-btn.save { background: #ff6b6b; color: white; }
+
+.croppr-container * { box-sizing: border-box; user-select: none; }
+.croppr-container { position: relative; display: inline-block; }
+.croppr { max-width: 100%; }
+.croppr-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+.croppr-region { position: absolute; cursor: move; box-shadow: 0 0 0 9999px rgba(0,0,0,0.5); }
+.croppr-handle { position: absolute; width: 10px; height: 10px; background: #ff6b6b; border-radius: 50%; }
+.croppr-handle-tl { top: -5px; left: -5px; cursor: nwse-resize; }
+.croppr-handle-tr { top: -5px; right: -5px; cursor: nesw-resize; }
+.croppr-handle-bl { bottom: -5px; left: -5px; cursor: nesw-resize; }
+.croppr-handle-br { bottom: -5px; right: -5px; cursor: nwse-resize; }
+
+/* VAULT VAULT GALLERY FRAME LAYOUT */
 .memories-section { margin-top: 30px; border-top: 1px solid #ffe0e0; padding-top: 25px; }
 .memories-section h3 { color: #ff6b6b; margin-bottom: 15px; }
 .upload-btn-wrapper { position: relative; display: inline-block; margin-bottom: 20px; }
