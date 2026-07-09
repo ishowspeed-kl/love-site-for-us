@@ -8,6 +8,7 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 20px;
+    overflow-x: hidden;
 }
 
 .container {
@@ -18,6 +19,8 @@ body {
     text-align: center;
     max-width: 450px;
     width: 100%;
+    position: relative;
+    z-index: 10;
 }
 
 h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
@@ -27,7 +30,37 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
 .days-label { font-size: 0.9rem; color: #7f8c8d; }
 
 /* ==========================================================================
-   VINTAGE LAMP SIDE-BY-SIDE INTERACTIVE LOGIN OVERLAY
+   BACKGROUND FLOATING HEARTS STYLE
+   ========================================================================== */
+.bg-heart {
+    position: fixed;
+    bottom: -50px;
+    color: rgba(255, 107, 107, 0.2);
+    user-select: none;
+    pointer-events: none;
+    z-index: 1;
+    animation: floatUp 7s linear infinite;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+    15% {
+        opacity: 1;
+    }
+    85% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ==========================================================================
+   VINTAGE LAMP LOGIN OVERLAY
    ========================================================================== */
 .interactive-lock-overlay {
     position: fixed;
@@ -52,10 +85,7 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
 }
 
 @media (max-width: 650px) {
-    .scene-container {
-        flex-direction: column;
-        gap: 30px;
-    }
+    .scene-container { flex-direction: column; gap: 30px; }
 }
 
 .lamp-unit {
@@ -78,94 +108,56 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
     transition: background 0.3s, box-shadow 0.3s;
 }
 
-.lamp-stand {
-    width: 12px;
-    height: 140px;
-    background: #e6e6e6;
-    z-index: 4;
-}
-
-.lamp-base {
-    width: 90px;
-    height: 12px;
-    background: #cccccc;
-    border-radius: 6px 6px 0 0;
-    z-index: 4;
-}
-
+.lamp-stand { width: 12px; height: 140px; background: #e6e6e6; z-index: 4; }
+.lamp-base { width: 90px; height: 12px; background: #cccccc; border-radius: 6px 6px 0 0; z-index: 4; }
 .lamp-chain {
     position: absolute;
-    top: 70px;
-    left: 110px;
-    width: 2px;
-    height: 100px;
-    background: #888;
-    z-index: 4;
-    transition: transform 0.1s ease;
+    top: 70px; left: 110px; width: 2px; height: 100px;
+    background: #888; z-index: 4; transition: transform 0.1s ease;
 }
 .lamp-chain::after {
-    content: '';
-    position: absolute;
-    bottom: -10px; left: -4px;
-    width: 10px; height: 10px;
-    background: #ad936b;
-    border-radius: 50%;
+    content: ''; position: absolute; bottom: -10px; left: -4px;
+    width: 10px; height: 10px; background: #ad936b; border-radius: 50%;
 }
-
 .lamp-chain.pulling { transform: translateY(12px); }
 
 .light-beam {
     position: absolute;
-    top: 45px;
-    width: 450px;
-    height: 450px;
+    top: 45px; width: 450px; height: 450px;
     background: radial-gradient(circle, rgba(255,241,195,0.18) 0%, rgba(24,25,32,0) 70%);
-    border-radius: 50%;
-    z-index: 2;
-    pointer-events: none;
-    opacity: 0;
-    transform: scale(0.8);
-    transition: opacity 0.4s ease, transform 0.4s ease;
+    border-radius: 50%; z-index: 2; pointer-events: none; opacity: 0;
+    transform: scale(0.8); transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .glass-lock-box {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 35px;
-    border-radius: 24px;
-    width: 280px;
-    text-align: center;
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-    opacity: 0.1;
-    transform: translateY(10px);
-    transition: all 0.4s ease;
-    z-index: 6;
+    padding: 35px; border-radius: 24px; width: 280px; text-align: center;
+    opacity: 0.1; transform: translateY(10px); transition: all 0.4s ease; z-index: 6;
 }
 
-.glass-lock-box h2 { color: rgba(255,255,255,0.4); margin: 0 0 5px 0; font-size: 1.8rem; font-weight: 500; }
+.glass-lock-box h2 { color: rgba(255,255,255,0.4); margin: 0 0 5px 0; font-size: 1.8rem; }
 .glass-lock-box .subtitle { color: rgba(255,255,255,0.25); font-size: 0.9rem; margin: 0 0 25px 0; }
-.glass-lock-box input { width: 85%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; text-align: center; font-size: 1rem; outline: none; pointer-events: none; }
+.glass-lock-box input { width: 85%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; text-align: center; outline: none; pointer-events: none; }
 
-.gold-btn { width: 100%; margin-top: 15px; background: linear-gradient(135deg, #444 0%, #333 100%); color: rgba(255,255,255,0.3); border: none; padding: 12px; border-radius: 12px; font-size: 1rem; font-weight: bold; cursor: pointer; pointer-events: none; }
+.gold-btn { width: 100%; margin-top: 15px; background: linear-gradient(135deg, #444 0%, #333 100%); color: rgba(255,255,255,0.3); border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; pointer-events: none; }
 
 .light-on { background: #14151b; }
 .light-on .lamp-shade { background: #fffbe6; box-shadow: 0 -20px 40px rgba(255, 251, 230, 0.2), 0 10px 40px rgba(255, 251, 230, 0.6); }
 .light-on .light-beam { opacity: 1; transform: scale(1); }
-.light-on .glass-lock-box { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.1); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); opacity: 1; transform: translateY(0); }
+.light-on .glass-lock-box { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); opacity: 1; transform: translateY(0); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
 .light-on .glass-lock-box h2 { color: #ffffff; }
 .light-on .glass-lock-box .subtitle { color: rgba(255,255,255,0.6); }
 .light-on .glass-lock-box input { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); pointer-events: auto; }
-.light-on .gold-btn { background: linear-gradient(135deg, #ffe082 0%, #ffca28 100%); color: #3e2723; box-shadow: 0 4px 15px rgba(255, 202, 40, 0.3); pointer-events: auto; }
-.light-on .gold-btn:hover { background: linear-gradient(135deg, #fff1c1 0%, #ffd54f 100%); }
+.light-on .gold-btn { background: linear-gradient(135deg, #ffe082 0%, #ffca28 100%); color: #3e2723; pointer-events: auto; box-shadow: 0 4px 15px rgba(255, 202, 40, 0.3); }
 
 .error-msg { color: #ff4757; font-size: 0.9rem; margin-top: 12px; display: none; }
 
 /* ==========================================================================
-   IMAGE CROPPER MODAL DIALOG
+   IMAGE CROPPER MODAL
    ========================================================================== */
-.crop-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; z-index: 20000; }
-.crop-box { background: white; padding: 25px; border-radius: 20px; max-width: 90%; width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.crop-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 20000; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.crop-box { background: white; padding: 25px; border-radius: 20px; max-width: 90%; width: 400px; text-align: center; }
 .crop-box h4 { margin: 0 0 15px 0; color: #ff6b6b; font-size: 1.2rem; }
 .crop-container { max-height: 300px; margin-bottom: 20px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
 .crop-container img { max-width: 100%; max-height: 300px; }
@@ -186,7 +178,7 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
 .croppr-handle-br { bottom: -5px; right: -5px; cursor: nwse-resize; }
 
 /* ==========================================================================
-   FEATURE ADDITIONS: JUKEBOX & TIME CAPSULE
+   JUKEBOX BOX & TIME CAPSULE
    ========================================================================== */
 .jukebox-box { background: #fdf0f0; padding: 15px; border-radius: 15px; margin: 20px 0; border: 1px dashed #ffb6b6; }
 .jukebox-box h3 { color: #ff6b6b; margin: 0 0 10px 0; font-size: 1.1rem; }
@@ -212,10 +204,9 @@ h1 { color: #ff6b6b; font-size: 2rem; margin-bottom: 20px; }
 .polaroid { position: relative; background: white; padding: 12px 12px 22px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-radius: 4px; border: 1px solid #eee; width: 250px; max-width: 100%; }
 .polaroid img { width: 250px; height: 190px; object-fit: cover; border-radius: 2px; }
 
-.delete-btn { position: absolute; top: 4px; right: 4px; background: rgba(255, 71, 87, 0.9); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); transition: background 0.2s, transform 0.2s; z-index: 10; }
-.delete-btn:hover { background: #ff4757; transform: scale(1.1); }
-
+.delete-btn { position: absolute; top: 4px; right: 4px; background: rgba(255, 71, 87, 0.9); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; font-size: 14px; font-weight: bold; cursor: pointer; display: flex; justify-content: center; align-items: center; z-index: 10; }
 .caption-input { width: 90%; border: none; border-bottom: 1px dashed #ccc; font-family: 'Courier New', Courier, monospace; text-align: center; margin-top: 15px; font-size: 1rem; outline: none; color: #444; }
+
 .letter { text-align: left; line-height: 1.6; color: #57606f; border-top: 1px solid #ffe0e0; padding-top: 20px; }
 .signature { text-align: right; font-style: italic; color: #ff6b6b; }
 .hidden { display: none !important; }
