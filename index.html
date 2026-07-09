@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Private Space</title>
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
     <!-- Image Cropping Utility Module -->
     <script src="https://cdn.jsdelivr.net/gh/billythekid/croppr.js@2.3.0/dist/croppr.min.js"></script>
 </head>
@@ -87,7 +87,6 @@
         const JSONBIN_KEY = "$2a$10$jqL2PEarUUpAC.Ll6VHUfuVuc44meEDE7g9IZKrLotAg6PNRGeF3K";
         const FIXED_BIN_ID = "6a4db95cf5f4af5e296f91b3"; 
 
-        // ⚡ Updated automatically with your custom credentials!
         const CLOUDINARY_CLOUD_NAME = "auheyaym";
         const CLOUDINARY_UPLOAD_PRESET = "sharuuu";
 
@@ -257,6 +256,18 @@
             const polaroidDiv = document.createElement('div');
             polaroidDiv.className = 'polaroid';
             
+            // Create Floating Delete Cross Button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = function() {
+                if (confirm("Are you sure you want to delete this memory? 🥺")) {
+                    polaroidDiv.remove();
+                    saveGalleryLayoutToCloud();
+                }
+            };
+            polaroidDiv.appendChild(deleteBtn);
+            
             if (mediaType === 'video') {
                 const video = document.createElement('video');
                 video.src = srcUrl;
@@ -291,10 +302,12 @@
             const dataToSave = [];
             galleryItems.forEach(item => {
                 const imgOrVideo = item.querySelector('img, video');
-                const src = imgOrVideo.src;
-                const caption = item.querySelector('.caption-input').value;
-                const type = item.getAttribute('data-type') || 'image';
-                dataToSave.push({ src, caption, type });
+                if (imgOrVideo) {
+                    const src = imgOrVideo.src;
+                    const caption = item.querySelector('.caption-input').value;
+                    const type = item.getAttribute('data-type') || 'image';
+                    dataToSave.push({ src, caption, type });
+                }
             });
             try {
                 await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}`, {
