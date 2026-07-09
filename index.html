@@ -62,11 +62,10 @@
             <p class="days-label">Days of laughing, loving, and growing.</p>
         </div>
 
-        <!-- IDEA 2: SOUNDTRACK PLAYBOX EMBED -->
+        <!-- IDEA 2: SOUNDTRACK PLAYBOX EMBED WITH CUSTOM PLAYLIST -->
         <div class="jukebox-box">
             <h3>🎵 Our Soundtrack</h3>
-            <!-- Standard Spotify Compact Integration - You can swap the playlist ID anytime -->
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DX10zKzsJ2jva?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5m98GCoOjOKYO1aoBtJmuR?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         </div>
 
         <!-- IDEA 1: DIGITAL LOVE LETTER TIME CAPSULE -->
@@ -165,7 +164,6 @@
                 });
                 if (response.ok) {
                     const resData = await response.json();
-                    // We extract capsule data stored on metadata or layout wrapper if empty
                     if (resData.record && resData.record.metaCapsule) {
                         activeCapsuleData = resData.record.metaCapsule;
                         runCapsuleEngine();
@@ -195,7 +193,6 @@
 
             const newCapsule = { unlockTimestamp: new Date(dateVal).getTime(), message: textVal };
             
-            // Get existing array structure to save safely alongside the pictures
             try {
                 const getRes = await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}/latest`, { headers: { "X-Master-Key": JSONBIN_KEY } });
                 let currentRecord = [];
@@ -205,7 +202,6 @@
                 }
                 
                 const payload = { gallery: currentRecord, metaCapsule: newCapsule };
-                // Also support backwards fallback processing
                 if(Array.isArray(currentRecord)) {
                     payload.gallery = currentRecord;
                 }
