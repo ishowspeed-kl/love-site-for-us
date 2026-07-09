@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Private Space</title>
     <link rel="stylesheet" href="style.css?v=9">
+    <!-- Image Cropping Utility Module -->
+    <script src="https://cdn.jsdelivr.net/gh/billythekid/croppr.js@2.3.0/dist/croppr.min.js"></script>
 </head>
 <body>
 
@@ -17,7 +19,6 @@
                 <div class="lamp-shade"></div>
                 <div class="lamp-stand"></div>
                 <div class="lamp-base"></div>
-                <!-- Interactive String Chain element -->
                 <div class="lamp-chain" id="pullChain"></div>
                 <div class="light-beam" id="beam"></div>
             </div>
@@ -36,6 +37,20 @@
         </div>
     </div>
 
+    <!-- IMAGE CROP ADJUSTMENT POPUP MODAL -->
+    <div id="cropModal" class="crop-modal hidden">
+        <div class="crop-box">
+            <h4>Adjust Your Image ✨</h4>
+            <div class="crop-container">
+                <img id="cropImageTarget" src="" alt="Adjusting Target">
+            </div>
+            <div class="crop-actions">
+                <button class="crop-btn cancel" onclick="closeCropModal()">Cancel</button>
+                <button class="crop-btn save" onclick="applyAndUploadCrop()">Perfect!</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content Container -->
     <div id="mainContent" class="container hidden">
         <div class="heart">❤️</div>
@@ -48,9 +63,9 @@
         </div>
 
         <div class="letter">
-            <p>Hey My-Love,</p>
-            <p>I wanted to build something unique just for you. Thank you for being my favorite person, my safest space, and the best part of every single day. Here's to many more days together Love you Meghappi.</p>
-            <p class="signature">With love, <br>Sharuuu</p>
+            <p>Hey standard-bearer,</p>
+            <p>I wanted to build something unique just for you. Thank you for being my favorite person, my safest space, and the best part of every single day. Here's to many more days together.</p>
+            <p class="signature">With love, <br>by Sharuuu</p>
         </div>
 
         <!-- Shared Memory Vault Layout -->
@@ -59,8 +74,8 @@
             <p id="syncStatus" style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Connecting to shared vault...</p>
             
             <div class="upload-btn-wrapper">
-                <button class="plus-btn" id="uploadBtn"><span>＋</span> Add Photo</button>
-                <input type="file" id="imageLoader" accept="image/*" onchange="handleImage(event)">
+                <button class="plus-btn" id="uploadBtn"><span>＋</span> Add Photo / Video</button>
+                <input type="file" id="imageLoader" accept="image/*,video/*" onchange="handleMediaUpload(event)">
             </div>
 
             <div class="gallery" id="memoryGallery"></div>
@@ -69,20 +84,22 @@
 
     <script>
         const correctPassword = "15092023"; 
-        const IMGBB_API_KEY = "17d052189730742c9add3641a5971b11";
         const JSONBIN_KEY = "$2a$10$jqL2PEarUUpAC.Ll6VHUfuVuc44meEDE7g9IZKrLotAg6PNRGeF3K";
         const FIXED_BIN_ID = "6a4db95cf5f4af5e296f91b3"; 
 
-        // Light tracking state controller variable
+        // ⚡ Updated automatically with your custom credentials!
+        const CLOUDINARY_CLOUD_NAME = "auheyaym";
+        const CLOUDINARY_UPLOAD_PRESET = "sharuuu";
+
         let isLightOn = false;
+        let cropprInstance = null;
+        let currentFile = null;
 
         function toggleLight() {
             const lockScreen = document.getElementById("lockScreen");
             const chain = document.getElementById("pullChain");
-            
             isLightOn = !isLightOn;
 
-            // Trigger physical pull down animation frame snap
             chain.classList.add("pulling");
             setTimeout(() => chain.classList.remove("pulling"), 150);
 
@@ -94,8 +111,7 @@
         }
 
         function checkPassword() {
-            if (!isLightOn) return; // Prevent unlocking if they can't see it!
-            
+            if (!isLightOn) return; 
             const userInput = document.getElementById("passwordInput").value;
             const errorMsg = document.getElementById("errorMsg");
             const lockScreen = document.getElementById("lockScreen");
@@ -120,7 +136,7 @@
         });
 
         function updateCounter() {
-            const anniversary = new Date(2023, 8, 15); // Month 8 is September
+            const anniversary = new Date(2023, 8, 15); 
             const today = new Date();
             const timeDiff = today.getTime() - anniversary.getTime();
             const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
@@ -138,53 +154,135 @@
                     const memories = resData.record;
                     document.getElementById('memoryGallery').innerHTML = ""; 
                     if (Array.isArray(memories) && memories.length > 0) {
-                        memories.forEach(mem => createPolaroid(mem.src, mem.caption, false));
+                        memories.forEach(mem => createPolaroid(mem.src, mem.caption, mem.type || 'image', false));
                         statusText.innerText = "✅ Cloud gallery synchronized up-to-date!";
                     } else {
-                        statusText.innerText = "✅ Live sync ready! Add your very first photo.";
+                        statusText.innerText = "✅ Live sync ready! Add your very first memory.";
                     }
                 }
-            } catch (err) {
-                console.error(err);
+            } catch (err) { }
+        }
+
+        function handleMediaUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            if (file.type.startsWith('video/')) {
+                executeCloudinaryPost(file, 'video');
+            } else if (file.type.startsWith('image/')) {
+                currentFile = file;
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const modal = document.getElementById('cropModal');
+                    const imgTarget = document.getElementById('cropImageTarget');
+                    
+                    imgTarget.src = event.target.result;
+                    modal.classList.remove('hidden');
+
+                    if (cropprInstance) { cropprInstance.destroy(); }
+                    setTimeout(() => {
+                        cropprInstance = new Croppr('#cropImageTarget', {
+                            aspectRatio: 1.31, 
+                            startSize: [80, 80, '%']
+                        });
+                    }, 100);
+                };
+                reader.readAsDataURL(file);
             }
         }
 
-        async function handleImage(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        function closeCropModal() {
+            document.getElementById('cropModal').classList.add('hidden');
+            document.getElementById('imageLoader').value = "";
+        }
+
+        function applyAndUploadCrop() {
+            if (!cropprInstance) return;
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = document.getElementById('cropImageTarget');
+            const data = cropprInstance.getValue();
+
+            const scaleX = img.naturalWidth / img.width;
+            const scaleY = img.naturalHeight / img.height;
+
+            canvas.width = data.width * scaleX;
+            canvas.height = data.height * scaleY;
+
+            ctx.drawImage(
+                img,
+                data.x * scaleX, data.y * scaleY,
+                data.width * scaleX, data.height * scaleY,
+                0, 0, canvas.width, canvas.height
+            );
+
+            canvas.toBlob((blob) => {
+                const finalCroppedFile = new File([blob], currentFile.name, { type: "image/jpeg" });
+                document.getElementById('cropModal').classList.add('hidden');
+                executeCloudinaryPost(finalCroppedFile, 'image');
+            }, 'image/jpeg', 0.9);
+        }
+
+        async function executeCloudinaryPost(fileObject, resourceType) {
             const statusText = document.getElementById('syncStatus');
             const uploadBtn = document.getElementById('uploadBtn');
-            statusText.innerText = "⏳ Uploading...";
+            statusText.innerText = "⏳ Uploading to vault...";
             uploadBtn.style.opacity = "0.5";
+
             const formData = new FormData();
-            formData.append("image", file);
+            formData.append("file", fileObject);
+            formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
             try {
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`, {
                     method: "POST",
                     body: formData
                 });
                 const resData = await res.json();
-                if (resData.success) {
-                    createPolaroid(resData.data.url, "", true);
+                if (resData.secure_url) {
+                    createPolaroid(resData.secure_url, "", resourceType, true);
+                    statusText.innerText = "✅ Upload complete!";
+                } else {
+                    statusText.innerText = "❌ Upload failed. Check configuration.";
                 }
-            } catch (err) { }
+            } catch (err) {
+                statusText.innerText = "❌ Connection error.";
+            }
             uploadBtn.style.opacity = "1";
+            document.getElementById('imageLoader').value = "";
         }
 
-        function createPolaroid(srcUrl, captionText, shouldSave) {
+        function createPolaroid(srcUrl, captionText, mediaType, shouldSave) {
             const polaroidDiv = document.createElement('div');
             polaroidDiv.className = 'polaroid';
-            const img = document.createElement('img');
-            img.src = srcUrl;
+            
+            if (mediaType === 'video') {
+                const video = document.createElement('video');
+                video.src = srcUrl;
+                video.controls = true;
+                video.style.width = "250px";
+                video.style.height = "190px";
+                video.style.objectFit = "cover";
+                video.style.borderRadius = "2px";
+                polaroidDiv.appendChild(video);
+            } else {
+                const img = document.createElement('img');
+                img.src = srcUrl;
+                polaroidDiv.appendChild(img);
+            }
+
             const caption = document.createElement('input');
             caption.type = 'text';
             caption.className = 'caption-input';
             caption.placeholder = 'Write a caption together...✍️';
             caption.value = captionText;
             caption.addEventListener('change', saveGalleryLayoutToCloud);
-            polaroidDiv.appendChild(img);
+            
+            polaroidDiv.setAttribute('data-type', mediaType);
             polaroidDiv.appendChild(caption);
             document.getElementById('memoryGallery').appendChild(polaroidDiv);
+            
             if (shouldSave) saveGalleryLayoutToCloud();
         }
 
@@ -192,9 +290,11 @@
             const galleryItems = document.querySelectorAll('.polaroid');
             const dataToSave = [];
             galleryItems.forEach(item => {
-                const src = item.querySelector('img').src;
+                const imgOrVideo = item.querySelector('img, video');
+                const src = imgOrVideo.src;
                 const caption = item.querySelector('.caption-input').value;
-                dataToSave.push({ src, caption });
+                const type = item.getAttribute('data-type') || 'image';
+                dataToSave.push({ src, caption, type });
             });
             try {
                 await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}`, {
