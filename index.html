@@ -4,19 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Private Space</title>
-    <link rel="stylesheet" href="style.css?v=8">
+    <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 
-    <!-- Privacy Lock Screen -->
-    <div id="lockScreen" class="lock-screen">
-        <div class="lock-box">
-            <div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>
-            <h2>Our Private Space</h2>
-            <input type="password" id="passwordInput" placeholder="Enter our password...">
-            <br>
-            <button onclick="checkPassword()">Unlock</button>
-            <p id="errorMsg" class="error-msg">Incorrect password. Try again! ❤️</p>
+    <!-- Unified Interactive Lock Screen Context Wrapper -->
+    <div id="lockScreen" class="interactive-lock-overlay">
+        <div class="scene-container">
+            
+            <!-- THE INTERACTIVE LAMP ASSEMBLY -->
+            <div class="lamp-unit" onclick="toggleLight()">
+                <div class="lamp-shade"></div>
+                <div class="lamp-stand"></div>
+                <div class="lamp-base"></div>
+                <!-- Interactive String Chain element -->
+                <div class="lamp-chain" id="pullChain"></div>
+                <div class="light-beam" id="beam"></div>
+            </div>
+
+            <!-- GLASS LOOK PASSPORT VALIDATION CARD -->
+            <div class="glass-lock-box" id="loginBox">
+                <h2>Welcome</h2>
+                <p class="subtitle">Our Private Space</p>
+                <div class="input-wrapper">
+                    <input type="password" id="passwordInput" placeholder="Enter Password...">
+                </div>
+                <button onclick="checkPassword()" class="gold-btn">Sign In</button>
+                <p id="errorMsg" class="error-msg">Incorrect password. Try again! ❤️</p>
+            </div>
+
         </div>
     </div>
 
@@ -53,13 +69,33 @@
 
     <script>
         const correctPassword = "15092023"; 
-        
-        // Final secure credential architecture
         const IMGBB_API_KEY = "17d052189730742c9add3641a5971b11";
         const JSONBIN_KEY = "$2a$10$jqL2PEarUUpAC.Ll6VHUfuVuc44meEDE7g9IZKrLotAg6PNRGeF3K";
         const FIXED_BIN_ID = "6a4db95cf5f4af5e296f91b3"; 
 
+        // Light tracking state controller variable
+        let isLightOn = false;
+
+        function toggleLight() {
+            const lockScreen = document.getElementById("lockScreen");
+            const chain = document.getElementById("pullChain");
+            
+            isLightOn = !isLightOn;
+
+            // Trigger physical pull down animation frame snap
+            chain.classList.add("pulling");
+            setTimeout(() => chain.classList.remove("pulling"), 150);
+
+            if (isLightOn) {
+                lockScreen.classList.add("light-on");
+            } else {
+                lockScreen.classList.remove("light-on");
+            }
+        }
+
         function checkPassword() {
+            if (!isLightOn) return; // Prevent unlocking if they can't see it!
+            
             const userInput = document.getElementById("passwordInput").value;
             const errorMsg = document.getElementById("errorMsg");
             const lockScreen = document.getElementById("lockScreen");
@@ -84,17 +120,15 @@
         });
 
         function updateCounter() {
-            const anniversary = new Date(2023, 9, 15); 
+            const anniversary = new Date(2023, 8, 15); // Month 8 is September
             const today = new Date();
             const timeDiff = today.getTime() - anniversary.getTime();
             const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
             document.getElementById('days-count').innerText = days + " Days";
         }
 
-        // Auto-loads gallery state mapping directly from the shared cloud vault
         async function loadSharedGallery() {
             const statusText = document.getElementById('syncStatus');
-            
             try {
                 const response = await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}/latest`, {
                     headers: { "X-Master-Key": JSONBIN_KEY }
@@ -109,102 +143,66 @@
                     } else {
                         statusText.innerText = "✅ Live sync ready! Add your very first photo.";
                     }
-                } else {
-                    statusText.innerText = "✨ Connected to database. Gallery empty.";
                 }
             } catch (err) {
-                statusText.innerText = "⚠️ Connected, waiting for initial photo layout.";
                 console.error(err);
             }
         }
 
-        // Handles image selection, instantly hosts it to Imgbb
         async function handleImage(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             const statusText = document.getElementById('syncStatus');
             const uploadBtn = document.getElementById('uploadBtn');
-            
-            statusText.innerText = "⏳ Processing and uploading picture to cloud server...";
+            statusText.innerText = "⏳ Uploading...";
             uploadBtn.style.opacity = "0.5";
-
             const formData = new FormData();
             formData.append("image", file);
-
             try {
                 const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
                     method: "POST",
                     body: formData
                 });
                 const resData = await res.json();
-
                 if (resData.success) {
-                    const hostedImageUrl = resData.data.url;
-                    createPolaroid(hostedImageUrl, "", true);
-                } else {
-                    statusText.innerText = "❌ Upload failed. Please check image size.";
+                    createPolaroid(resData.data.url, "", true);
                 }
-            } catch (err) {
-                statusText.innerText = "❌ Network connection error during upload.";
-            }
+            } catch (err) { }
             uploadBtn.style.opacity = "1";
         }
 
         function createPolaroid(srcUrl, captionText, shouldSave) {
             const polaroidDiv = document.createElement('div');
             polaroidDiv.className = 'polaroid';
-
             const img = document.createElement('img');
             img.src = srcUrl;
-
             const caption = document.createElement('input');
             caption.type = 'text';
             caption.className = 'caption-input';
             caption.placeholder = 'Write a caption together...✍️';
             caption.value = captionText;
-
             caption.addEventListener('change', saveGalleryLayoutToCloud);
-
             polaroidDiv.appendChild(img);
             polaroidDiv.appendChild(caption);
             document.getElementById('memoryGallery').appendChild(polaroidDiv);
-
             if (shouldSave) saveGalleryLayoutToCloud();
         }
 
-        // Orchestrates core sync engine payload distribution
         async function saveGalleryLayoutToCloud() {
-            const statusText = document.getElementById('syncStatus');
             const galleryItems = document.querySelectorAll('.polaroid');
             const dataToSave = [];
-            
             galleryItems.forEach(item => {
                 const src = item.querySelector('img').src;
                 const caption = item.querySelector('.caption-input').value;
                 dataToSave.push({ src, caption });
             });
-
             try {
-                // Instantly sync changes to our universal shared database block
-                const response = await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}`, {
+                await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Master-Key': JSONBIN_KEY
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
                     body: JSON.stringify(dataToSave)
                 });
-                
-                if (response.ok) {
-                    statusText.innerText = "✅ Saved and synced perfectly!";
-                } else {
-                    statusText.innerText = "❌ Cloud update rejected by backend database.";
-                }
-            } catch (err) {
-                statusText.innerText = "❌ Failed to save sync modifications to backend.";
-                console.error(err);
-            }
+            } catch (err) { }
         }
     </script>
 </body>
