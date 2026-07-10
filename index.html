@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Private Space</title>
-    <link rel="stylesheet" href="style.css?v=15">
+    <link rel="stylesheet" href="style.css?v=16">
     <!-- Image Cropping Utility Module -->
     <script src="https://cdn.jsdelivr.net/gh/billythekid/croppr.js@2.3.0/dist/croppr.min.js"></script>
 </head>
@@ -37,7 +37,7 @@
         </div>
     </div>
 
-    <!-- ADJUST IMAGE MODAL (FIXED WITH ZOOM SLIDER) -->
+    <!-- ADJUST IMAGE MODAL -->
     <div id="adjustModal" class="modal-overlay" style="display: none;">
         <div class="modal-card">
             <h3>Adjust Your Image ✨</h3>
@@ -133,7 +133,6 @@
         const CLOUDINARY_UPLOAD_PRESET = "sharuuu";
 
         let isLightOn = false;
-        let cropprInstance = null;
         let currentFile = null;
         let capsuleTimerInterval = null;
         let activeCapsuleData = null;
@@ -162,7 +161,7 @@
             }, 450);
         }
 
-        // Photo Adjustment Slider Logic
+        // Live Zoom Engine Slider View Response
         function adjustImageZoom() {
             const slider = document.getElementById('zoomSlider');
             const img = document.getElementById('previewImage');
@@ -176,13 +175,12 @@
             document.getElementById('imageLoader').value = "";
         }
 
+        // FIXED: Now safely posts the file out to Cloudinary execution tree
         function saveAdjustedImage() {
-            const slider = document.getElementById('zoomSlider');
-            const zoomVal = slider ? slider.value : 1;
-            
-            const activeAvatar = document.querySelector('.status-avatar');
-            if (activeAvatar) {
-                activeAvatar.style.transform = `scale(${zoomVal})`;
+            if (currentFile) {
+                executeCloudinaryPost(currentFile, 'image');
+            } else {
+                alert("No media detected to process! 🥺");
             }
             closeAdjustModal();
         }
@@ -354,7 +352,7 @@
             if (file.type.startsWith('video/')) {
                 executeCloudinaryPost(file, 'video');
             } else if (file.type.startsWith('image/')) {
-                currentFile = file;
+                currentFile = file; // Stashes file globally to use inside saveAdjustedImage()
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const modal = document.getElementById('adjustModal');
@@ -394,6 +392,7 @@
             } catch (err) { statusText.innerText = "❌ Connection error."; }
             uploadBtn.style.opacity = "1";
             document.getElementById('imageLoader').value = "";
+            currentFile = null; // Flush cache allocation
         }
 
         function createPolaroid(srcUrl, captionText, mediaType, shouldSave) {
