@@ -4,34 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Private Space</title>
-    <link rel="stylesheet" href="style.css?v=16">
+    <link rel="stylesheet" href="style.css?v=17">
     <!-- Image Cropping Utility Module -->
     <script src="https://cdn.jsdelivr.net/gh/billythekid/croppr.js@2.3.0/dist/croppr.min.js"></script>
 </head>
 <body>
 
-    <!-- Unified Interactive Lock Screen -->
+    <!-- Unified Interactive Lock Screen (Lumen Theme) -->
     <div id="lockScreen" class="interactive-lock-overlay">
         <div class="scene-container">
             
-            <!-- THE INTERACTIVE LAMP ASSEMBLY -->
+            <!-- THE CUTE BULB ASSEMBLY -->
             <div class="lamp-unit" onclick="toggleLight()">
-                <div class="lamp-shade"></div>
-                <div class="lamp-stand"></div>
-                <div class="lamp-base"></div>
-                <div class="lamp-chain" id="pullChain"></div>
+                <div class="hanging-wire"></div>
+                <div class="bulb-character">
+                    <div class="bulb-face">
+                        <div class="eye left"></div>
+                        <div class="eye right"></div>
+                        <div class="blush left"></div>
+                        <div class="blush right"></div>
+                        <div class="mouth"></div>
+                    </div>
+                </div>
+                <!-- PULL CORD -->
+                <div class="pull-string" id="pullChain">
+                    <div class="pull-bead"></div>
+                </div>
                 <div class="light-beam" id="beam"></div>
             </div>
 
-            <!-- LOGIN PASSPORT CARD -->
+            <!-- LOGIN CARD -->
             <div class="glass-lock-box" id="loginBox">
-                <h2>Welcome</h2>
-                <p class="subtitle">Our Private Space</p>
+                <div class="brand-header">
+                    <span class="mini-bulb">💡</span>
+                    <h2>Lumen</h2>
+                </div>
+                <p class="subtitle">Welcome back — the light's on for you.</p>
+
                 <div class="input-wrapper">
                     <input type="password" id="passwordInput" placeholder="Enter Password...">
                 </div>
+
                 <button onclick="checkPassword()" class="gold-btn">Sign In</button>
                 <p id="errorMsg" class="error-msg">Incorrect password. Try again! ❤️</p>
+                
+                <p class="hint-footer">pull the cord — the light's on for you</p>
             </div>
 
         </div>
@@ -175,7 +192,6 @@
             document.getElementById('imageLoader').value = "";
         }
 
-        // FIXED: Now safely posts the file out to Cloudinary execution tree
         function saveAdjustedImage() {
             if (currentFile) {
                 executeCloudinaryPost(currentFile, 'image');
@@ -352,7 +368,7 @@
             if (file.type.startsWith('video/')) {
                 executeCloudinaryPost(file, 'video');
             } else if (file.type.startsWith('image/')) {
-                currentFile = file; // Stashes file globally to use inside saveAdjustedImage()
+                currentFile = file;
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     const modal = document.getElementById('adjustModal');
@@ -392,7 +408,7 @@
             } catch (err) { statusText.innerText = "❌ Connection error."; }
             uploadBtn.style.opacity = "1";
             document.getElementById('imageLoader').value = "";
-            currentFile = null; // Flush cache allocation
+            currentFile = null;
         }
 
         function createPolaroid(srcUrl, captionText, mediaType, shouldSave) {
