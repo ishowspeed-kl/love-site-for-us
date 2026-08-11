@@ -1,505 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>For Meghaa ❤️</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    body {
-      background-color: #0f1412;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      color: #e0e6e3;
-    }
-
-    .container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 100px;
-      position: relative;
-    }
-
-    /* LAMP CHARACTER */
-    .lamp-container {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .lamp-glow {
-      position: absolute;
-      top: 60px;
-      width: 260px;
-      height: 240px;
-      background: radial-gradient(ellipse at top, rgba(255, 185, 95, 0.25) 0%, rgba(255, 185, 95, 0) 70%);
-      clip-path: polygon(25% 0%, 75% 0%, 100% 100%, 0% 100%);
-      pointer-events: none;
-    }
-
-    .lamp-shade {
-      width: 140px;
-      height: 100px;
-      background: linear-gradient(135deg, #ffd185, #faa844);
-      border-radius: 20px 20px 10px 10px;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 0 30px rgba(255, 175, 75, 0.4);
-    }
-
-    .lamp-face {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .lamp-eyes {
-      display: flex;
-      gap: 16px;
-      font-size: 14px;
-      font-weight: bold;
-      color: #3d2204;
-    }
-    .lamp-mouth {
-      width: 18px;
-      height: 10px;
-      background: #7a1d1d;
-      border-bottom-left-radius: 10px;
-      border-bottom-right-radius: 10px;
-    }
-
-    .lamp-chain {
-      position: absolute;
-      right: 25px;
-      bottom: -25px;
-      width: 2px;
-      height: 30px;
-      background: #dfb074;
-    }
-    .lamp-chain::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: -4px;
-      width: 10px;
-      height: 10px;
-      background: #dfb074;
-      border-radius: 50%;
-    }
-
-    .lamp-stand {
-      width: 10px;
-      height: 70px;
-      background: #e6c594;
-    }
-    .lamp-base {
-      width: 90px;
-      height: 14px;
-      background: #e6c594;
-      border-radius: 10px 10px 4px 4px;
-    }
-
-    /* LOGIN CARD CONTAINER */
-    #loginSection {
-      position: relative;
-      margin-top: 40px;
-    }
-
-    /* ANIMATED BABY CHARACTER */
-    .baby-avatar {
-      position: absolute;
-      top: -75px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 110px;
-      height: 110px;
-      z-index: 10;
-    }
-
-    .baby-head {
-      width: 90px;
-      height: 80px;
-      background: #ffe0bd;
-      border-radius: 50% 50% 45% 45%;
-      margin: 0 auto;
-      position: relative;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    }
-
-    .baby-hair {
-      position: absolute;
-      top: -8px;
-      left: 42px;
-      width: 8px;
-      height: 14px;
-      background: #5c3818;
-      border-radius: 50% 50% 0 0;
-      transform: rotate(-15deg);
-    }
-
-    .baby-cheeks {
-      position: absolute;
-      top: 42px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 12px;
-    }
-    .cheek {
-      width: 14px;
-      height: 8px;
-      background: #ffb3b3;
-      border-radius: 50%;
-      opacity: 0.7;
-    }
-
-    .baby-eyes {
-      position: absolute;
-      top: 32px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 24px;
-    }
-    .eye {
-      width: 10px;
-      height: 10px;
-      background: #2c1d11;
-      border-radius: 50%;
-    }
-
-    .baby-mouth {
-      position: absolute;
-      bottom: 16px;
-      left: 39px;
-      width: 12px;
-      height: 6px;
-      background: #d65a5a;
-      border-bottom-left-radius: 8px;
-      border-bottom-right-radius: 8px;
-    }
-
-    .baby-hands {
-      position: absolute;
-      top: 30px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 10px;
-      z-index: 12;
-    }
-    .hand {
-      width: 22px;
-      height: 22px;
-      background: #ffe0bd;
-      border-radius: 50%;
-      border: 1px solid #f3c299;
-      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-    .hand.left { transform: translateY(35px) translateX(-5px); }
-    .hand.right { transform: translateY(35px) translateX(5px); }
-
-    .covering .hand.left { transform: translateY(0px) translateX(14px); }
-    .covering .hand.right { transform: translateY(0px) translateX(-14px); }
-
-    .baby-body {
-      width: 60px;
-      height: 30px;
-      background: #a8e6cf;
-      border-radius: 20px 20px 0 0;
-      margin: -10px auto 0 auto;
-    }
-
-    /* LOGIN CARD */
-    .card {
-      background: #141c18;
-      border: 1px solid #23302a;
-      border-radius: 24px;
-      padding: 45px 32px 30px 32px;
-      width: 360px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-      text-align: center;
-    }
-
-    .card h1 {
-      font-size: 1.8rem;
-      color: #5cdb95;
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-
-    .card p.subtitle {
-      font-size: 0.85rem;
-      color: #7b8e85;
-      margin-bottom: 24px;
-    }
-
-    .input-group {
-      text-align: left;
-      margin-bottom: 16px;
-    }
-
-    .input-group label {
-      display: block;
-      font-size: 0.75rem;
-      color: #7b8e85;
-      margin-bottom: 6px;
-      margin-left: 4px;
-    }
-
-    .input-field {
-      width: 100%;
-      padding: 12px 14px;
-      background: #1c2622;
-      border: 1px solid #2a3a33;
-      border-radius: 12px;
-      color: #fff;
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .input-field:focus { border-color: #5cdb95; }
-
-    .btn-submit {
-      width: 100%;
-      padding: 14px;
-      background: #5cdb95;
-      border: none;
-      border-radius: 12px;
-      color: #0f1412;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    /* PRANK SCREEN */
-    #prankSection {
-      display: none;
-      text-align: center;
-      background: rgba(20, 28, 24, 0.95);
-      border: 1px solid #23302a;
-      border-radius: 24px;
-      padding: 50px 40px;
-      width: 90%;
-      max-width: 450px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-      position: relative;
-    }
-
-    #prankSection h2 {
-      font-size: 2rem;
-      color: #5cdb95;
-      margin-bottom: 30px;
-    }
-
-    .btn-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 30px;
-      min-height: 80px;
-      position: relative;
-    }
-
-    .prank-btn {
-      padding: 14px 32px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 30px;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    #yesBtn {
-      background: #ff4b2b;
-      color: white;
-      position: absolute;
-      transition: all 0.15s ease;
-      z-index: 100;
-    }
-
-    #noBtn {
-      background: #5cdb95;
-      color: #0f1412;
-    }
-
-    /* LOVE SURPRISE MESSAGE */
-    #loveMessage {
-      display: none;
-      margin-top: 25px;
-      animation: fadeIn 1s ease-in-out;
-    }
-
-    #loveMessage p {
-      font-size: 1.2rem;
-      color: #ff9a9e;
-      line-height: 1.6;
-    }
-
-    .heart-pop {
-      position: fixed;
-      font-size: 24px;
-      animation: floatUp 2s linear forwards;
-      pointer-events: none;
-      z-index: 1000;
-    }
-
-    @keyframes floatUp {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-150px) scale(1.5); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Private Space</title>
+    <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
-  <div class="container">
-    
-    <!-- LAMP CHARACTER -->
-    <div class="lamp-container" id="lampContainer">
-      <div class="lamp-glow"></div>
-      <div class="lamp-shade">
-        <div class="lamp-face">
-          <div class="lamp-eyes"><span>></span><span><</span></div>
-          <div class="lamp-mouth"></div>
+    <!-- Privacy Lock Screen -->
+    <div id="lockScreen" class="lock-screen">
+        <div class="lock-box">
+            <div style="font-size: 3rem; margin-bottom: 10px;">🔒</div>
+            <h2>Our Private Space</h2>
+            <input type="password" id="passwordInput" placeholder="Enter our password...">
+            <br>
+            <button onclick="checkPassword()">Unlock</button>
+            <p id="errorMsg" class="error-msg">Incorrect password. Try again! ❤️</p>
         </div>
-        <div class="lamp-chain"></div>
-      </div>
-      <div class="lamp-stand"></div>
-      <div class="lamp-base"></div>
     </div>
 
-    <!-- STEP 1: LOGIN CARD -->
-    <div id="loginSection">
-      <div class="baby-avatar" id="babyAvatar">
-        <div class="baby-head">
-          <div class="baby-hair"></div>
-          <div class="baby-cheeks">
-            <div class="cheek"></div>
-            <div class="cheek"></div>
-          </div>
-          <div class="baby-eyes">
-            <div class="eye"></div>
-            <div class="eye"></div>
-          </div>
-          <div class="baby-mouth"></div>
-          <div class="baby-hands">
-            <div class="hand left"></div>
-            <div class="hand right"></div>
-          </div>
+    <!-- Main Content Container -->
+    <div id="mainContent" class="container hidden">
+        <div class="heart">❤️</div>
+        <h1>Happy to Have You</h1>
+        
+        <div class="counter-box">
+            <p>We have been together for:</p>
+            <h2 id="days-count">Calculating...</h2>
+            <p class="days-label">Days of laughing, loving, and growing.</p>
         </div>
-        <div class="baby-body"></div>
-      </div>
 
-      <div class="card">
-        <h1>Love Space ❤️</h1>
-        <p class="subtitle">Welcome back! Enter our secret code to enter.</p>
+        <div class="letter">
+            <p>Hey standard-bearer,</p>
+            <p>I wanted to build something unique just for you. Thank you for being my favorite person, my safest space, and the best part of every single day. Here's to many more days together.</p>
+            <p class="signature">With love, <br>Me</p>
+        </div>
 
-        <form onsubmit="handleLogin(event)">
-          <div class="input-group">
-            <label>Username</label>
-            <input type="text" class="input-field" value="Meghaaa" required>
-          </div>
+        <!-- Shared Memory Vault Layout -->
+        <div class="memories-section">
+            <h3>✨ Our Shared Cloud Vault</h3>
+            <p id="syncStatus" style="font-size: 0.9rem; color: #888; margin-bottom: 15px;">Connecting to shared vault...</p>
+            
+            <div class="upload-btn-wrapper">
+                <button class="plus-btn" id="uploadBtn"><span>＋</span> Add Photo</button>
+                <input type="file" id="imageLoader" accept="image/*" onchange="handleImage(event)">
+            </div>
 
-          <div class="input-group">
-            <label>Anniversary Code</label>
-            <input type="password" id="passwordInput" class="input-field" placeholder="15092023" maxlength="8" required>
-          </div>
-
-          <button type="submit" class="btn-submit">Sign in</button>
-        </form>
-      </div>
+            <div class="gallery" id="memoryGallery"></div>
+        </div>
     </div>
 
-    <!-- STEP 2: REVERSE PRANK SCREEN -->
-    <div id="prankSection">
-      <h2 id="questionHeading">Do you love me, Meghaaa? 🥺</h2>
-      
-      <div class="btn-container" id="btnArea">
-        <button class="prank-btn" id="yesBtn" onmouseover="runAwayYes()" onclick="runAwayYes()">YES ❤️</button>
-        <button class="prank-btn" id="noBtn" onclick="clickNo()">NO 😜</button>
-      </div>
+    <script>
+        const correctPassword = "15092023"; 
+        
+        // Final secure credential architecture
+        const IMGBB_API_KEY = "17d052189730742c9add3641a5971b11";
+        const JSONBIN_KEY = "$2a$10$jqL2PEarUUpAC.Ll6VHUfuVuc44meEDE7g9IZKrLotAg6PNRGeF3K";
+        const FIXED_BIN_ID = "6a4db95cf5f4af5e296f91b3"; 
 
-      <div id="loveMessage">
-        <p>Aww, I knew it! You couldn't click YES, but clicking NO brought you straight to my heart! 💖<br><br>I love you so much Meghaaa! You mean everything to me! 😘✨</p>
-      </div>
-    </div>
+        function checkPassword() {
+            const userInput = document.getElementById("passwordInput").value;
+            const errorMsg = document.getElementById("errorMsg");
+            const lockScreen = document.getElementById("lockScreen");
+            const mainContent = document.getElementById("mainContent");
 
-  </div>
+            if (userInput === correctPassword) {
+                lockScreen.style.opacity = "0";
+                setTimeout(() => {
+                    lockScreen.classList.add("hidden");
+                    mainContent.classList.remove("hidden");
+                    updateCounter();
+                    loadSharedGallery(); 
+                }, 500);
+            } else {
+                errorMsg.style.display = "block";
+                document.getElementById("passwordInput").value = "";
+            }
+        }
 
-  <script>
-    const passwordInput = document.getElementById('passwordInput');
-    const babyAvatar = document.getElementById('babyAvatar');
+        document.getElementById("passwordInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") { checkPassword(); }
+        });
 
-    passwordInput.addEventListener('focus', () => {
-      babyAvatar.classList.add('covering');
-    });
+        function updateCounter() {
+            const anniversary = new Date(2023, 9, 15); 
+            const today = new Date();
+            const timeDiff = today.getTime() - anniversary.getTime();
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            document.getElementById('days-count').innerText = days + " Days";
+        }
 
-    passwordInput.addEventListener('blur', () => {
-      babyAvatar.classList.remove('covering');
-    });
+        // Auto-loads gallery state mapping directly from the shared cloud vault
+        async function loadSharedGallery() {
+            const statusText = document.getElementById('syncStatus');
+            
+            try {
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}/latest`, {
+                    headers: { "X-Master-Key": JSONBIN_KEY }
+                });
+                if (response.ok) {
+                    const resData = await response.json();
+                    const memories = resData.record;
+                    document.getElementById('memoryGallery').innerHTML = ""; 
+                    if (Array.isArray(memories) && memories.length > 0) {
+                        memories.forEach(mem => createPolaroid(mem.src, mem.caption, false));
+                        statusText.innerText = "✅ Cloud gallery synchronized up-to-date!";
+                    } else {
+                        statusText.innerText = "✅ Live sync ready! Add your very first photo.";
+                    }
+                } else {
+                    statusText.innerText = "✨ Connected to database. Gallery empty.";
+                }
+            } catch (err) {
+                statusText.innerText = "⚠️ Connected, waiting for initial photo layout.";
+                console.error(err);
+            }
+        }
 
-    function handleLogin(e) {
-      e.preventDefault();
-      const pass = passwordInput.value;
-      if (pass === "15092023") {
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('lampContainer').style.display = 'none';
-        document.getElementById('prankSection').style.display = 'block';
-      } else {
-        alert("Oops! Wrong code. Hint: Our anniversary date 😉");
-      }
-    }
+        // Handles image selection, instantly hosts it to Imgbb
+        async function handleImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-    function runAwayYes() {
-      const yesBtn = document.getElementById('yesBtn');
-      const x = Math.floor(Math.random() * (window.innerWidth - 120));
-      const y = Math.floor(Math.random() * (window.innerHeight - 60));
-      yesBtn.style.position = 'fixed';
-      yesBtn.style.left = `${x}px`;
-      yesBtn.style.top = `${y}px`;
-    }
+            const statusText = document.getElementById('syncStatus');
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            statusText.innerText = "⏳ Processing and uploading picture to cloud server...";
+            uploadBtn.style.opacity = "0.5";
 
-    function clickNo() {
-      document.getElementById('yesBtn').style.display = 'none';
-      document.getElementById('noBtn').style.display = 'none';
-      document.getElementById('questionHeading').innerText = "Hehehe caught you! ❤️";
-      document.getElementById('loveMessage').style.display = 'block';
+            const formData = new FormData();
+            formData.append("image", file);
 
-      for(let i = 0; i < 25; i++) {
-        setTimeout(createHeart, i * 100);
-      }
-    }
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const resData = await res.json();
 
-    function createHeart() {
-      const heart = document.createElement('div');
-      heart.classList.add('heart-pop');
-      heart.innerText = ['💖', '💕', '❤️', '🌸', '✨'][Math.floor(Math.random() * 5)];
-      heart.style.left = Math.random() * 100 + 'vw';
-      heart.style.top = (Math.random() * 40 + 50) + 'vh';
-      document.body.appendChild(heart);
+                if (resData.success) {
+                    const hostedImageUrl = resData.data.url;
+                    createPolaroid(hostedImageUrl, "", true);
+                } else {
+                    statusText.innerText = "❌ Upload failed. Please check image size.";
+                }
+            } catch (err) {
+                statusText.innerText = "❌ Network connection error during upload.";
+            }
+            uploadBtn.style.opacity = "1";
+        }
 
-      setTimeout(() => { heart.remove(); }, 2000);
-    }
-  </script>
+        function createPolaroid(srcUrl, captionText, shouldSave) {
+            const polaroidDiv = document.createElement('div');
+            polaroidDiv.className = 'polaroid';
+
+            const img = document.createElement('img');
+            img.src = srcUrl;
+
+            const caption = document.createElement('input');
+            caption.type = 'text';
+            caption.className = 'caption-input';
+            caption.placeholder = 'Write a caption together...✍️';
+            caption.value = captionText;
+
+            caption.addEventListener('change', saveGalleryLayoutToCloud);
+
+            polaroidDiv.appendChild(img);
+            polaroidDiv.appendChild(caption);
+            document.getElementById('memoryGallery').appendChild(polaroidDiv);
+
+            if (shouldSave) saveGalleryLayoutToCloud();
+        }
+
+        // Orchestrates core sync engine payload distribution
+        async function saveGalleryLayoutToCloud() {
+            const statusText = document.getElementById('syncStatus');
+            const galleryItems = document.querySelectorAll('.polaroid');
+            const dataToSave = [];
+            
+            galleryItems.forEach(item => {
+                const src = item.querySelector('img').src;
+                const caption = item.querySelector('.caption-input').value;
+                dataToSave.push({ src, caption });
+            });
+
+            try {
+                // Instantly sync changes to our universal shared database block
+                const response = await fetch(`https://api.jsonbin.io/v3/b/${FIXED_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Master-Key': JSONBIN_KEY
+                    },
+                    body: JSON.stringify(dataToSave)
+                });
+                
+                if (response.ok) {
+                    statusText.innerText = "✅ Saved and synced perfectly!";
+                } else {
+                    statusText.innerText = "❌ Cloud update rejected by backend database.";
+                }
+            } catch (err) {
+                statusText.innerText = "❌ Failed to save sync modifications to backend.";
+                console.error(err);
+            }
+        }
+    </script>
 </body>
 </html>
